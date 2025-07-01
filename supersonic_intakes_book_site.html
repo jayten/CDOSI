@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computational Design and Optimization of Supersonic Intakes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        main {
+            margin-top: 80px;
+        }
+
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><defs><linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23667eea;stop-opacity:1" /><stop offset="100%" style="stop-color:%23764ba2;stop-opacity:1" /></linearGradient></defs><rect width="1200" height="600" fill="url(%23grad1)"/><polygon points="0,400 300,350 600,300 900,250 1200,200 1200,600 0,600" fill="rgba(255,255,255,0.1)"/></svg>');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 8rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"><animate attributeName="r" values="2;5;2" dur="3s" repeatCount="indefinite"/></circle><circle cx="20" cy="30" r="1" fill="rgba(255,255,255,0.1)"><animate attributeName="r" values="1;3;1" dur="2s" repeatCount="indefinite"/></circle><circle cx="80" cy="70" r="1.5" fill="rgba(255,255,255,0.1)"><animate attributeName="r" values="1.5;4;1.5" dur="2.5s" repeatCount="indefinite"/></circle></svg>');
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            animation: slideInUp 1s ease-out;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: slideInUp 1s ease-out 0.3s both;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            animation: slideInUp 1s ease-out 0.6s both;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        section {
+            padding: 4rem 0;
+        }
+
+        .about {
+            background: white;
+            position: relative;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #2c3e50;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        .book-showcase {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 4rem;
+            align-items: center;
+            margin-top: 4rem;
+        }
+
+        .book-cover {
+            text-align: center;
+        }
+
+        .book-cover-image {
+            width: 300px;
+            height: 400px;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .book-cover-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .book-cover-image:hover {
+            transform: rotateY(5deg) scale(1.05);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        .book-cover-image:hover::before {
+            opacity: 1;
+        }
+
+        .book-info h3 {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .book-info p {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            color: #555;
+        }
+
+        .authors {
+            background: #f8f9fa;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .authors::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .authors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .author-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .author-card:hover {
+            transform: translateY(-5px);
+            border-color: #667eea;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .author-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: bold;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            transition: transform 0.3s ease;
+            background-size: cover;
+            background-position: center;
+            object-fit: cover;
+        }
+
+        .author-image img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .author-card:hover .author-image {
+            transform: scale(1.05);
+        }
+
+        .author-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .author-title {
+            color: #667eea;
+            font-style: italic;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .features {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .purchase {
+            background: white;
+            text-align: center;
+        }
+
+        .purchase-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .purchase-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .purchase-card:hover {
+            border-color: #667eea;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .purchase-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+
+        .price {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .purchase-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .purchase-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .book-showcase {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">Supersonic Intakes</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#authors">Authors</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#purchase">Purchase</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>Computational Design and Optimization of Supersonic Intakes</h1>
+                    <p>A comprehensive guide to advanced computational methods for supersonic inlet design, featuring cutting-edge optimization techniques and practical engineering applications.</p>
+                    <a href="#purchase" class="cta-button">Get the Book</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="about">
+            <div class="container">
+                <h2 class="section-title">About the Book</h2>
+                <div class="book-showcase">
+                    <div class="book-cover">
+                        <div class="book-cover-image">
+                            <img src="images/book-cover.jpg" alt="Book Cover" style="width: 100%; height: 100%; object-fit: cover; border-radius: 15px;" onerror="this.style.display='none'; this.parentNode.innerHTML='<div><div style=&quot;font-size: 1.2rem; margin-bottom: 1rem;&quot;>COMPUTATIONAL DESIGN</div><div style=&quot;font-size: 1rem; margin-bottom: 1rem;&quot;>AND</div><div style=&quot;font-size: 1.2rem; margin-bottom: 1rem;&quot;>OPTIMIZATION</div><div style=&quot;font-size: 1rem; margin-bottom: 1rem;&quot;>OF</div><div style=&quot;font-size: 1.2rem;&quot;>SUPERSONIC INTAKES</div></div>';">
+                        </div>
+                    </div>
+                    <div class="book-info">
+                        <h3>Advanced Engineering for Supersonic Systems</h3>
+                        <p>This book presents state-of-the-art computational methods for designing and optimizing supersonic intakes, essential components in high-speed aircraft and propulsion systems. It covers theoretical foundations, numerical methods, and practical applications in aerospace engineering.</p>
+                        <p>Key topics include multi-objective optimization using genetic algorithms, advanced CFD analysis techniques, shock wave management, flow control strategies, and seamless integration with propulsion systems. The text bridges the gap between theoretical aerodynamics and practical engineering design.</p>
+                        <p><strong>Publisher:</strong> Routledge<br>
+                        <strong>ISBN:</strong> 9781032794570<br>
+                        <strong>Publication Year:</strong> 2024<br>
+                        <strong>Pages:</strong> Comprehensive technical reference</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="authors" class="authors">
+            <div class="container">
+                <h2 class="section-title">Meet the Authors</h2>
+                <div class="authors-grid">
+                    <div class="author-card">
+                        <div class="author-image">
+                            <img src="images/sandhu.jpg" alt="J.P.S. Sandhu" onerror="this.style.display='none'; this.parentNode.innerHTML='JS';">
+                        </div>
+                        <div class="author-name">J.P.S. Sandhu</div>
+                        <div class="author-title">Lead Author & Researcher</div>
+                        <p>Expert in computational fluid dynamics and supersonic flow analysis with extensive experience in aerospace engineering and multi-objective optimization techniques.</p>
+                    </div>
+                    <div class="author-card">
+                        <div class="author-image">
+                            <img src="images/park.jpg" alt="Park" onerror="this.style.display='none'; this.parentNode.innerHTML='P';">
+                        </div>
+                        <div class="author-name">Park</div>
+                        <div class="author-title">Co-Author & Specialist</div>
+                        <p>Specialist in optimization techniques and numerical methods for aerodynamic design applications with focus on genetic algorithms and metamodeling approaches.</p>
+                    </div>
+                    <div class="author-card">
+                        <div class="author-image">
+                            <img src="images/ananthkrishnan.jpg" alt="Ananthkrishnan" onerror="this.style.display='none'; this.parentNode.innerHTML='A';">
+                        </div>
+                        <div class="author-name">Ananthkrishnan</div>
+                        <div class="author-title">Co-Author & Academic</div>
+                        <p>Academic researcher with expertise in propulsion systems, high-speed aerodynamics, and computational methods for supersonic intake design.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="features">
+            <div class="container">
+                <h2 class="section-title">Key Features</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🚀</div>
+                        <h3>Advanced CFD Methods</h3>
+                        <p>Comprehensive coverage of computational fluid dynamics techniques specifically tailored for supersonic intake design.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⚙️</div>
+                        <h3>Optimization Algorithms</h3>
+                        <p>Multi-objective genetic algorithms, Kriging models, and other cutting-edge optimization techniques.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3>Practical Applications</h3>
+                        <p>Real-world case studies and examples from aerospace industry applications.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔬</div>
+                        <h3>Research Insights</h3>
+                        <p>Latest research findings and theoretical developments in supersonic intake technology.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💡</div>
+                        <h3>Design Methodology</h3>
+                        <p>Systematic approach to supersonic intake design using axiomatic design theory.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📈</div>
+                        <h3>Performance Analysis</h3>
+                        <p>Detailed analysis of pressure recovery, flow distortion, and aerodynamic performance metrics.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="purchase" class="purchase">
+            <div class="container">
+                <h2 class="section-title">Get Your Copy</h2>
+                <p>Available in multiple formats to suit your needs</p>
+                <div class="purchase-options">
+                    <div class="purchase-card">
+                        <h3>Hardcover</h3>
+                        <div class="price">$179.95</div>
+                        <p>Premium hardcover edition with high-quality printing and binding.</p>
+                        <a href="https://www.routledge.com/Computational-Design-and-Optimization-of-Supersonic-Intakes/Sandhu-Park-Ananthkrishnan/p/book/9781032794570" class="purchase-btn" target="_blank">Buy Hardcover</a>
+                    </div>
+                    <div class="purchase-card">
+                        <h3>eBook</h3>
+                        <div class="price">$159.95</div>
+                        <p>Digital edition with instant access and searchable content.</p>
+                        <a href="https://www.routledge.com/Computational-Design-and-Optimization-of-Supersonic-Intakes/Sandhu-Park-Ananthkrishnan/p/book/9781032794570" class="purchase-btn" target="_blank">Buy eBook</a>
+                    </div>
+                    <div class="purchase-card">
+                        <h3>Academic Discount</h3>
+                        <div class="price">Contact</div>
+                        <p>Special pricing available for educational institutions and bulk orders.</p>
+                        <a href="https://www.routledge.com/Computational-Design-and-Optimization-of-Supersonic-Intakes/Sandhu-Park-Ananthkrishnan/p/book/9781032794570" class="purchase-btn" target="_blank">Contact Publisher</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Computational Design and Optimization of Supersonic Intakes. Published by Routledge.</p>
+            <p>For more information, visit the <a href="https://www.routledge.com/Computational-Design-and-Optimization-of-Supersonic-Intakes/Sandhu-Park-Ananthkrishnan/p/book/9781032794570" target="_blank" style="color: #667eea;">publisher's page</a>.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add scroll effect to header
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(255, 255, 255, 0.98)';
+            } else {
+                header.style.background = 'rgba(255, 255, 255, 0.95)';
+            }
+        });
+
+        // Add intersection observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all cards and sections
+        document.querySelectorAll('.author-card, .feature-card, .purchase-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>
